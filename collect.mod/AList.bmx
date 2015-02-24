@@ -26,22 +26,12 @@ rem
     Shuffle
         Always: O(n)
 endrem
-type List extends CollectionIndexedDynamic
+type AList extends CollectionIndexedDynamic
 
     ' initialize
-    method init:List( size%=0 )
+    method init:AList( size%=0 )
         initbuffer( size )
         return self
-    end method
-    
-    method set:Collection( index%, value:object )
-        assert buffer and index>=0 and index<length
-        buffer[index] = value
-        return self
-    end method
-    method get:object( index% )
-        assert buffer and index>=0 and index<length
-        return buffer[index]
     end method
     
     method push:Collection( value:object )
@@ -76,31 +66,70 @@ type List extends CollectionIndexedDynamic
         return value
     end method
     
+    method insertarray:CollectionIndexed( index%, other:object[] )
+        assert other and buffer and index>=0 and index<=length
+        if other.length
+            ' allocate space for new elements
+            local oldlength% = length
+            length :+ other.length
+            autobufferinc()
+            ' shift existing elements to the right
+            if index < oldlength shiftright( index, oldlength-index, other.length )
+            ' insert the elements
+            for local j% = 0 until other.length
+                buffer[index] = other[j]
+                index :+ 1
+            next
+        endif
+        return self
+    end method
+    method insertcollection:CollectionIndexed( index%, other:Collection )
+        assert other and buffer and index>=0 and index<=length
+        local otherlength% = other.size()
+        if otherlength
+            ' allocate space for new elements
+            local oldlength% = length
+            length :+ otherlength
+            autobufferinc()
+            ' shift existing elements to the right
+            if index < oldlength shiftright( index, oldlength-index, otherlength )
+            ' insert the elements
+            local otherindexed:CollectionIndexedDynamic = CollectionIndexedDynamic( other )
+            if otherindexed
+                ' perform a simple memcopy operation if the other collection is also an indexeddynamic
+                local copysource@ ptr = byte ptr(otherindexed.buffer)
+                local copydest@ ptr = byte ptr(buffer) + index * OBJECT_POINTER_SIZE
+                local copysize% = otherindexed.length * OBJECT_POINTER_SIZE
+                memcopy( copydest, copysource, copysize )
+            else
+                ' otherwise, use an enumerator
+                for local value:object = eachin other
+                    buffer[index] = value
+                    index :+ 1
+                next
+            endif
+        endif
+        return self
+    end method
+    
     method copy:Collection()
-        local target:List = new List.init( buffersize )
+        local target:AList = new AList
         copybuffer( target )
         return target
     end method
     
     ' override extend method to do things with less overhead
     method extend:Collection( other:Collection )
-        ' affect length and buffer size all at once
-        assert buffer
-        local index% = length
-        length :+ other.size()
-        autobufferinc()
-        ' add the items
-        local otherindexed:List = List( other )
-        if otherindexed ' if the other object is also a list, do some quick copying without worrying about an enumerator
-            const OBJECT_POINTER_SIZE% = 4 ' number of bytes comprising an object pointer
-            memcopy( byte ptr(buffer) + index, byte ptr(otherindexed.buffer), otherindexed.length * OBJECT_POINTER_SIZE )
-        else
-            local itr:Enumerator = other.enum()
-            while itr.hasnext()
-                buffer[index] = itr.nextitem()
-                index :+ 1
-            wend
-        endif
+        return insertcollection( length, other )
+    end method
+    method array:Collection( array:object[] )
+        assert array
+        rebuffer( array.length )
+        length = array.length
+        local copysource@ ptr = byte ptr(array)
+        local copydest@ ptr = byte ptr(buffer)
+        local copysize% = array.length * OBJECT_POINTER_SIZE
+        memcopy( copydest, copysource, copysize )
         return self
     end method
     
@@ -134,18 +163,6 @@ type List extends CollectionIndexedDynamic
     method sort:Collection( sorter:CollectionSorter )
         sorter.sortarray( buffer, length )
         return self
-    end method
-    
-    ' internal utility methods
-    method shiftleft( lowbound%, highbound%, distance%=1 )
-        for local i% = lowbound until highbound
-            buffer[i-distance] = buffer[i]
-        next
-    end method
-    method shiftright( lowbound%, highbound%, distance%=1 )
-        for local i% = highbound-1 to lowbound step -1
-            buffer[i+distance] = buffer[i]
-        next 
     end method
     
 end type

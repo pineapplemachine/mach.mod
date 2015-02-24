@@ -12,6 +12,14 @@ rem
         Always: O(n)
 endrem
 type CollectionIndexed extends Collection abstract
+    ' get first/last element
+    method first:object()
+        return get(0)
+    end method
+    method last:object()
+        return get( size()-1 )
+    end method
+    
     ' get/set at index
     method set:Collection( loc%, value:object )
         throw EXCEPTION_UNIMPLEMENTED; return null
@@ -36,65 +44,51 @@ type CollectionIndexed extends Collection abstract
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     
-    ' convert collection to/from array
-    method toarray:object[]()
-        local length% = size()
-        local index% = 0
-        local array:object[] = new object[ length ]
-        local itr:Enumerator = enum()
-        while itr.hasnext()
-            array[index] = itr.nextitem()
-            index :+ 1
-        wend
-        return array
+    ' insert/remove multiple at arbitrary index
+    method insertgroup:CollectionIndexed( index%, value:object )
+        if Collection( value ) return insertcollection( index, Collection( value ) )
+        if object[]( value ) return insertarray( index, object[]( value ) )
+        throw "Can't insert"
     end method
-    method fromarray:CollectionIndexed( array:object[] )
-        throw EXCEPTION_UNIMPLEMENTED; return null
+    method removegroup:CollectionIndexed( index%, count% )
+        for local j% = 0 until count
+            remove( index )
+        next
+        return self
+    end method
+    method insertarray:CollectionIndexed( index%, other:object[] )
+        for local j% = 0 until other.length
+            insert( index, other[j] )
+            index :+ 1
+        next
+        return self
+    end method
+    method insertcollection:CollectionIndexed( index%, other:Collection )
+        for local value:object = eachin other
+            insert( index, value )
+            index :+ 1
+        next
+        return self
     end method
     
     method extend:Collection( other:Collection )
-        ' compiler doesn't like using eachin here for some reason
-        local itr:Enumerator = other.enum()
-        while itr.hasnext()
-            push( itr.nextitem() )
-        wend
+        for local value:object = eachin other
+            push( value )
+        next
         return self
     end method
     method contains%( value:object )
-        local itr:Enumerator = enum()
-        while itr.hasnext()
-            if itr.nextitem() = value return true
-        wend
+        for local member:object = eachin self
+            if member = value return true
+        next
         return false
     end method
     method count%( value:object )
         local sum% = 0
-        local itr:Enumerator = enum()
-        while itr.hasnext()
-            sum :+ itr.nextitem() = value
-        wend
+        for local member:object = eachin self
+            sum :+ member = value
+        next
         return sum
-    end method
-    
-    ' get string representation
-    method tostring$()
-        return csv()
-    end method
-    method csv$( delimiter$=",", nullstring$="" )
-        local first% = true
-        local str$ = ""
-        local itr:Enumerator = enum()
-        while itr.hasnext()
-            if not first str :+ delimiter
-            first = false
-            local value:object = itr.nextitem()
-            if value
-                str :+ value.tostring()
-            else
-                str :+ nullstring
-            endif
-        wend
-        return str
     end method
 end type
 
@@ -111,7 +105,7 @@ type EnumeratorIndexed extends Enumerator
     method hasnext%()
         return index < bound
     end method
-    method nextitem:object()
+    method nextobject:object()
         local value:object = target.get( index )
         index :+ 1
         return value

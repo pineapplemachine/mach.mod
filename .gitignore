@@ -17,5 +17,11 @@
 # Ignore exe
 *.exe
 
+# Ignore app
+*.app
+
+# Ignore blitzmax backups
+*.bmx.bak
+
 # Ignore bmx build dirs
-*/.bmx/*
+*.bmx/*

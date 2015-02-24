@@ -23,6 +23,8 @@ rem
             N-dimensional spatial hash (SHash)
             Cache (Cache)
             Ordered list (OList)
+            Rope
+            Skip list
     
 endrem
 
@@ -35,6 +37,9 @@ type Collection abstract
     ' return an enumerator for the items in the collection
     method enum:Enumerator()
         throw EXCEPTION_UNIMPLEMENTED; return null
+    end method
+    method ObjectEnumerator:Enumerator() ' allows eachin support
+        return enum()
     end method
     ' clear all items from the collection
     method clear:Collection()
@@ -64,11 +69,37 @@ type Collection abstract
     method copy:Collection()
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
+    ' create a collection using the values in an array
+    method array:Collection( array:object[] )
+        throw EXCEPTION_UNIMPLEMENTED; return null
+    end method
+    
+    ' get string representation
+    method tostring$()
+        return csv()
+    end method
+    method csv$( delimiter$=",", nullstring$="" )
+        local first% = true
+        local str$ = ""
+        for local value:object = eachin self
+            if not first str :+ delimiter
+            first = false
+            if value
+                str :+ value.tostring()
+            else
+                str :+ nullstring
+            endif
+        next
+        return str
+    end method
     
 end type
 
 ' base enumerator class (every collection class should have at least one accompanying enumerator)
 type Enumerator abstract
     method hasnext%() abstract
-    method nextitem:object() abstract
+    method nextobject:object() abstract
+    method ObjectEnumerator:Enumerator()
+        return self
+    end method
 end type
