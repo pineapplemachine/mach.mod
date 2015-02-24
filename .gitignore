@@ -1,0 +1,21 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Unignore special extensionless files
+!*README
+!*LICENSE
+
+# Ignore DS_Store
+*.DS_Store
+
+# Ignore exe
+*.exe
+
+# Ignore bmx build dirs
+*/.bmx/*
