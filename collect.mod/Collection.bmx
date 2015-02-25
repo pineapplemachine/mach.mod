@@ -70,7 +70,7 @@ type Collection abstract
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     ' create a collection using the values in an array
-    method array:Collection( array:object[] )
+    method array:Collection( values:object[] )
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     

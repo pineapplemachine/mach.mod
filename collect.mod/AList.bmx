@@ -66,49 +66,24 @@ type AList extends CollectionIndexedDynamic
         return value
     end method
     
+    method pusharray:CollectionIndexed( other:object[] )
+        assert other
+        insarray( length, other )
+        return self
+    end method
+    method pushcollection:CollectionIndexed( other:Collection )
+        assert other
+        inscollection( length, other )
+        return self
+    end method
     method insertarray:CollectionIndexed( index%, other:object[] )
         assert other and buffer and index>=0 and index<=length
-        if other.length
-            ' allocate space for new elements
-            local oldlength% = length
-            length :+ other.length
-            autobufferinc()
-            ' shift existing elements to the right
-            if index < oldlength movebuffer( index, index+other.length, oldlength-index )
-            ' insert the elements
-            for local j% = 0 until other.length
-                buffer[index] = other[j]
-                index :+ 1
-            next
-        endif
+        insarray( index, other )
         return self
     end method
     method insertcollection:CollectionIndexed( index%, other:Collection )
         assert other and buffer and index>=0 and index<=length
-        local otherlength% = other.size()
-        if otherlength
-            ' allocate space for new elements
-            local oldlength% = length
-            length :+ otherlength
-            autobufferinc()
-            ' shift existing elements to the right
-            if index < oldlength movebuffer( index, index+otherlength, oldlength-index )
-            ' insert the elements
-            local otherindexed:CollectionIndexedDynamic = CollectionIndexedDynamic( other )
-            if otherindexed
-                ' perform a simple memcopy operation if the other collection is also an indexeddynamic
-                local copysource@ ptr = byte ptr(otherindexed.buffer)
-                local copydest@ ptr = byte ptr(buffer) + index * OBJECT_POINTER_SIZE
-                local copysize% = otherindexed.length * OBJECT_POINTER_SIZE
-                memcopy( copydest, copysource, copysize )
-            else
-                ' otherwise, use an enumerator
-                for local value:object = eachin other
-                    buffer[index] = value
-                    index :+ 1
-                next
-            endif
-        endif
+        inscollection( index, other )
         return self
     end method
     
@@ -163,6 +138,49 @@ type AList extends CollectionIndexedDynamic
     method sort:Collection( sorter:CollectionSorter )
         sorter.sortarray( buffer, length )
         return self
+    end method
+    
+    ' utility methods for group pushing/insertion
+    method insarray( index%, other:object[] )
+        if other.length
+            ' allocate space for new elements
+            local oldlength% = length
+            length :+ other.length
+            autobufferinc()
+            ' shift existing elements to the right
+            if index < oldlength movebuffer( index, index+other.length, oldlength-index )
+            ' insert the elements
+            for local j% = 0 until other.length
+                buffer[index] = other[j]
+                index :+ 1
+            next
+        endif
+    end method
+    method inscollection( index%, other:Collection )
+        local otherlength% = other.size()
+        if otherlength
+            ' allocate space for new elements
+            local oldlength% = length
+            length :+ otherlength
+            autobufferinc()
+            ' shift existing elements to the right
+            if index < oldlength movebuffer( index, index+otherlength, oldlength-index )
+            ' insert the elements
+            local otherindexed:CollectionIndexedDynamic = CollectionIndexedDynamic( other )
+            if otherindexed
+                ' do it a bit more efficiently if the other is also CollectionIndexedDynamic
+                for local j% = 0 until otherlength
+                    buffer[index] = otherindexed.buffer[j]
+                    index :+ 1
+                next
+            else
+                ' otherwise, use an enumerator
+                for local value:object = eachin other
+                    buffer[index] = value
+                    index :+ 1
+                next
+            endif
+        endif
     end method
     
 end type

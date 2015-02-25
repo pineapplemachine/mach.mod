@@ -21,8 +21,6 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     field buffer:object[]
     ' current size of the buffer
     field buffersize%=0
-    ' current number of items in the collection
-    field length%
     
     ' keep buffer size within these bounds
     field buffersizemin% = BUFFER_SIZE_MIN
@@ -39,7 +37,7 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     field buffersizesparsetarget%
     
     ' generalized init method
-    method initbuffer( size% )
+    method initbuffer( size%=0 )
         if size <= 0 size = buffersizemin
         length = 0
         rebuffer( size )
@@ -64,16 +62,10 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
         autobufferdec()
         return self
     end method
-    method size%()
-        return length
-    end method
-    method empty%()
-        return length > 0
-    end method
-    method array:Collection( array:object[] )
-        assert array
-        rebuffer( array.length )
-        for local value:object = eachin array
+    method array:Collection( values:object[] )
+        assert values
+        rebuffer( values.length )
+        for local value:object = eachin values
             push( value )
         next
         return self
@@ -107,8 +99,7 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
         targ.buffersizesparsetarget = buffersizesparsetarget
         targ.buffersize = buffersize
         targ.length = length
-        targ.buffer = new object[ buffersize ]
-        memcopy( byte ptr(targ.buffer), byte ptr(buffer), length * OBJECT_POINTER_SIZE )
+        targ.buffer = buffer[..]
     end method
     
     ' set parameters for buffer resizing
@@ -173,7 +164,6 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     
     ' utility method for moving around groups of elements
     method movebuffer( src%, dst%, count% )
-        ' memmove would be faster than iteration, but it breaks the GC
         if src > dst
             for local i% = 0 until count
                 buffer[dst] = buffer[src]

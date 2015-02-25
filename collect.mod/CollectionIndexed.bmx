@@ -1,6 +1,8 @@
 superstrict
 import "Collection.bmx"
 
+
+
 rem
     Base class for collections whose members are indexed
     Extend
@@ -12,6 +14,17 @@ rem
         Always: O(n)
 endrem
 type CollectionIndexed extends Collection abstract
+
+    ' current number of items in the collection
+    field length%
+    
+    method size%()
+        return length
+    end method
+    method empty%()
+        return length = 0
+    end method
+
     ' get first/last element
     method first:object()
         return get(0)
@@ -36,6 +49,27 @@ type CollectionIndexed extends Collection abstract
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     
+    ' push multiple
+    method pushgroup:CollectionIndexed( value:object )
+        if Collection( value ) return pushcollection( Collection( value ) )
+        if object[]( value ) return pusharray( object[]( value ) )
+        throw "Can't push"
+    end method
+    method pusharray:CollectionIndexed( other:object[] )
+        assert other
+        for local j% = 0 until other.length
+            push( other[j] )
+        next
+        return self
+    end method
+    method pushcollection:CollectionIndexed( other:Collection )
+        assert other
+        for local value:object = eachin other
+            push( value )
+        next
+        return self
+    end method
+    
     ' insert/remove at arbitrary index
     method insert:Collection( loc%, value:object )
         throw EXCEPTION_UNIMPLEMENTED; return null
@@ -51,12 +85,14 @@ type CollectionIndexed extends Collection abstract
         throw "Can't insert"
     end method
     method removegroup:CollectionIndexed( index%, count% )
+        assert index >= 0 and ((index+count) < length)
         for local j% = 0 until count
             remove( index )
         next
         return self
     end method
     method insertarray:CollectionIndexed( index%, other:object[] )
+        assert other and index >= 0 and index < length
         for local j% = 0 until other.length
             insert( index, other[j] )
             index :+ 1
@@ -64,6 +100,7 @@ type CollectionIndexed extends Collection abstract
         return self
     end method
     method insertcollection:CollectionIndexed( index%, other:Collection )
+        assert other and index >= 0 and index < length
         for local value:object = eachin other
             insert( index, value )
             index :+ 1
@@ -72,6 +109,7 @@ type CollectionIndexed extends Collection abstract
     end method
     
     method extend:Collection( other:Collection )
+        assert other
         for local value:object = eachin other
             push( value )
         next
@@ -90,18 +128,31 @@ type CollectionIndexed extends Collection abstract
         next
         return sum
     end method
+    method array:Collection( values:object[] )
+        assert values
+        for local value:object = eachin values
+            push( value )
+        next
+        return self
+    end method
+    
 end type
+
+
 
 ' enumerate over the items contained within CollectionIndexed object
 type EnumeratorIndexed extends Enumerator
+
     field target:CollectionIndexed
     field index%
     field bound%
+    
     method init:EnumeratorIndexed( t:CollectionIndexed, b% )
         target = t
         bound = b
         return self
     end method
+    
     method hasnext%()
         return index < bound
     end method
@@ -110,4 +161,7 @@ type EnumeratorIndexed extends Enumerator
         index :+ 1
         return value
     end method
+    
 end type
+
+
