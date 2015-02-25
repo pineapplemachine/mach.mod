@@ -53,14 +53,14 @@ type AList extends CollectionIndexedDynamic
         assert buffer and index>=0 and index<length
         length :+ 1
         autobufferinc()
-        shiftright( index, length-1 )
+        movebuffer( index, index+1, length-index )
         buffer[index] = value
         return self
     end method
     method remove:object( index% )
         assert buffer and index>=0 and index<length
         local value:object = buffer[index]
-        shiftleft( index+1, length )
+        movebuffer( index+1, index, length-index-1 )
         length :- 1
         autobufferdec()
         return value
@@ -74,7 +74,7 @@ type AList extends CollectionIndexedDynamic
             length :+ other.length
             autobufferinc()
             ' shift existing elements to the right
-            if index < oldlength shiftright( index, oldlength-index, other.length )
+            if index < oldlength movebuffer( index, index+other.length, oldlength-index )
             ' insert the elements
             for local j% = 0 until other.length
                 buffer[index] = other[j]
@@ -92,7 +92,7 @@ type AList extends CollectionIndexedDynamic
             length :+ otherlength
             autobufferinc()
             ' shift existing elements to the right
-            if index < oldlength shiftright( index, oldlength-index, otherlength )
+            if index < oldlength movebuffer( index, index+otherlength, oldlength-index )
             ' insert the elements
             local otherindexed:CollectionIndexedDynamic = CollectionIndexedDynamic( other )
             if otherindexed

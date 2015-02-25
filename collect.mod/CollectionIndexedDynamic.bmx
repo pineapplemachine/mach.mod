@@ -57,7 +57,7 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     
     method enum:Enumerator()
         assert buffer
-        return new EnumeratorIndexed.init( self, length )
+        return new EnumeratorIndexedDynamic.init( self, length )
     end method
     method clear:Collection()
         length = 0
@@ -98,7 +98,7 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     method copybuffer( target:Collection )
         local targ:CollectionIndexedDynamic = CollectionIndexedDynamic( target )
         targ.buffersizemin = buffersizemin
-        targ.buffersizemax = buffersizemax 
+        targ.buffersizemax = buffersizemax
         targ.buffersizedec = buffersizedec
         targ.buffersizeinc = buffersizeinc
         targ.buffersizeallowinc = buffersizeallowinc
@@ -107,7 +107,8 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
         targ.buffersizesparsetarget = buffersizesparsetarget
         targ.buffersize = buffersize
         targ.length = length
-        targ.buffer = buffer[..]
+        targ.buffer = new object[ buffersize ]
+        memcopy( byte ptr(targ.buffer), byte ptr(buffer), length * OBJECT_POINTER_SIZE )
     end method
     
     ' set parameters for buffer resizing
@@ -154,35 +155,40 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
         autobufferinc()
     end method
     method autobufferdec()
-        while buffersizeallowdec and length <= buffersizesparsetarget and buffersize > buffersizemin
-            local newsize% = buffersize * buffersizedec
-            rebuffer( newsize )
+        local newsize% = buffersize
+        local newsparsetarget% = buffersizesparsetarget
+        while buffersizeallowdec and length <= newsparsetarget and newsize > buffersizemin
+            newsize :* buffersizedec
+            newsparsetarget = newsize * buffersizesparse
         wend
+        if newsize < buffersize rebuffer( newsize )
     end method
     method autobufferinc()
-        while buffersizeallowinc and length >= buffersize and buffersize < buffersizemax
-            local newsize% = buffersize * buffersizeinc
-            rebuffer( newsize )
+        local newsize% = buffersize
+        while buffersizeallowinc and length >= newsize and newsize < buffersizemax
+            newsize :* buffersizeinc
         wend
+        if newsize > buffersize rebuffer( newsize )
     end method
     
-    ' utility method for shifting groups of elements
-    method shift( index%, count%, distance% )
-        local copysource@ ptr = byte ptr(buffer) + (index * OBJECT_POINTER_SIZE)
-        local copydest@ ptr = copysource + (distance * OBJECT_POINTER_SIZE)
-        local copysize% = count * OBJECT_POINTER_SIZE
-        memmove( copydest, copysource, copysize )
-    end method
-    method shiftleft( lowbound%, highbound%, distance%=1 )
-        shift( lowbound, (highbound-lowbound), -distance )
-        for local i% = lowbound until highbound
-            buffer[i-distance] = buffer[i]
-        next
-    end method
-    method shiftright( lowbound%, highbound%, distance%=1 )
-        for local i% = highbound-1 to lowbound step -1
-            buffer[i+distance] = buffer[i]
-        next 
+    ' utility method for moving around groups of elements
+    method movebuffer( src%, dst%, count% )
+        ' memmove would be faster than iteration, but it breaks the GC
+        if src > dst
+            for local i% = 0 until count
+                buffer[dst] = buffer[src]
+                src :+ 1
+                dst :+ 1
+            next
+        else
+            src :+ count
+            dst :+ count
+            for local i% = 0 until count
+                src :- 1
+                dst :- 1
+                buffer[dst] = buffer[src]
+            next
+        endif
     end method
     
 end type

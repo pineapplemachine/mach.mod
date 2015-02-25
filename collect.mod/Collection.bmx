@@ -79,11 +79,11 @@ type Collection abstract
         return csv()
     end method
     method csv$( delimiter$=",", nullstring$="" )
-        local first% = true
+        local firstitr% = true
         local str$ = ""
         for local value:object = eachin self
-            if not first str :+ delimiter
-            first = false
+            if not firstitr str :+ delimiter
+            firstitr = false
             if value
                 str :+ value.tostring()
             else
