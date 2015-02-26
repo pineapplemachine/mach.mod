@@ -92,6 +92,44 @@ type LList extends CollectionIndexedLinked
         return insertbefore( head, value )
     end method
 
+    method insert:Collection( index%, value:object )
+        insertafter( nodeatindex( index ), value )
+    end method
+    method remove:object( index% )
+        removenode( nodeatindex( index ) )
+    end method
+    method removegroup:CollectionIndexed( index%, count% )
+        local node:LListNode = LListNode( nodeatindex( index ) )
+        assert node
+        length :- count
+        while count
+            local succ:LListNode = node.succ
+            node.remove()
+            count :- 1
+            node = succ
+        wend
+        return self
+    end method
+    method insertarray:CollectionIndexed( index%, other:object[] )
+        local node:LListNode = LListNode( nodeatindex( index ) )
+        assert node and other
+        length :+ other.length
+        local j% = other.length
+        while j > 0
+            j :- 1
+            node.insertafter( new LListNode.init( other[j] ) )
+        wend
+        return self
+    end method
+    method insertcollection:CollectionIndexed( index%, other:Collection )
+        local node:LListNode = LListNode( nodeatindex( index ) )
+        assert node and other
+        for local value:object = eachin other
+            node = insertafter( node, value )
+        next
+        return self
+    end method
+
     method removefirst:object()
         assert head and length
         local value:object = head.succ.value
