@@ -22,13 +22,10 @@ print odd
 print "popping last letter: " + string( l.pop() )
 print "list: " + l.tostring()
 
-print "list contains letter G? " + l.contains("G")
-print "list contains numeral 7? " + l.contains("7")
-
 print "removing letter at index 3 (d): " + string( l.remove(3) )
 print "list: " + l.tostring()
 
-print "inserting numeral 1 to beginning of list"
+print "inserting numeral 1 at beginning of list"
 l.insert( 0, "1" )
 print "list: " + l.tostring()
 
@@ -58,14 +55,26 @@ l.sort( sorter )
 print "list: " + l.tostring()
 
 print "extending list with the characters a,b,c,d"
-l.extend( new AList.array(["a","b","c","d"]) )
+local abcd:AList = AList( new AList.array(["a","b","c","d"]) )
+l.extend( abcd )
+print "list: " + l.tostring()
+
+print "inserting a,b,c,d at index 2"
+l.insertgroup( 2, abcd )
 print "list: " + l.tostring()
 
 print "copying list"
 local l2:AList = AList( l.copy() )
+print "original list: " + l.tostring()
 
 print "clearing original list"
 l.clear()
-print "list: " + l.tostring()
-
+print "original list: " + l.tostring()
 print "copied list: " +l2.tostring()
+
+if l2.tostring() = "1,2,a,b,c,d,A,B,C,E,F,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,a,b,c,d"
+    print "end result is as expected"
+else
+    print "something bugged out"
+endif
+

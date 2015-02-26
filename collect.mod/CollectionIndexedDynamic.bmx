@@ -60,6 +60,13 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     method clear:Collection()
         length = 0
         autobufferdec()
+        for local i% = 0 until buffer.length
+            buffer[i] = null
+        next
+        return self
+    end method
+    method clearfast:Collection()
+        length = 0
         return self
     end method
     method array:Collection( values:object[] )

@@ -34,10 +34,10 @@ type CollectionIndexed extends Collection abstract
     end method
     
     ' get/set at index
-    method set:Collection( loc%, value:object )
+    method set:Collection( index%, value:object )
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
-    method get:object( loc% )
+    method get:object( index% )
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     
@@ -71,10 +71,10 @@ type CollectionIndexed extends Collection abstract
     end method
     
     ' insert/remove at arbitrary index
-    method insert:Collection( loc%, value:object )
+    method insert:Collection( index%, value:object )
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
-    method remove:object( loc% )
+    method remove:object( index% )
         throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     
@@ -114,19 +114,6 @@ type CollectionIndexed extends Collection abstract
             push( value )
         next
         return self
-    end method
-    method contains%( value:object )
-        for local member:object = eachin self
-            if member = value return true
-        next
-        return false
-    end method
-    method count%( value:object )
-        local sum% = 0
-        for local member:object = eachin self
-            sum :+ member = value
-        next
-        return sum
     end method
     method array:Collection( values:object[] )
         assert values

@@ -3,7 +3,6 @@
 
 superstrict
 import "CollectionIndexedDynamic.bmx"
-import "CollectionSorter.bmx"
 
 rem
     Random access list implemented using a dynamically sized array
