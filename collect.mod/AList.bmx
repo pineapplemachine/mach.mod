@@ -15,11 +15,6 @@ rem
     Insert/Remove (random insertion/removal)
         Average case: O(n/2)
         Worst case: O(n) + Memory reallocation
-    Clear
-        Best case: O(1)
-        Worst case: O(1) + Memory reallocation
-    Copy
-        Always: O(n)
     Reverse
         Always: O(n/2)
     Shuffle
@@ -66,22 +61,18 @@ type AList extends CollectionIndexedDynamic
     end method
     
     method pusharray:CollectionIndexed( other:object[] )
-        assert other
         insarray( length, other )
         return self
     end method
     method pushcollection:CollectionIndexed( other:Collection )
-        assert other
         inscollection( length, other )
         return self
     end method
     method insertarray:CollectionIndexed( index%, other:object[] )
-        assert other and buffer and index>=0 and index<=length
         insarray( index, other )
         return self
     end method
     method insertcollection:CollectionIndexed( index%, other:Collection )
-        assert other and buffer and index>=0 and index<=length
         inscollection( index, other )
         return self
     end method
@@ -95,16 +86,6 @@ type AList extends CollectionIndexedDynamic
     ' override extend method to do things with less overhead
     method extend:Collection( other:Collection )
         return insertcollection( length, other )
-    end method
-    method array:Collection( array:object[] )
-        assert array
-        rebuffer( array.length )
-        length = array.length
-        local copysource@ ptr = byte ptr(array)
-        local copydest@ ptr = byte ptr(buffer)
-        local copysize% = array.length * OBJECT_POINTER_SIZE
-        memcopy( copydest, copysource, copysize )
-        return self
     end method
     
     ' reverse order of items in collection in-place
@@ -141,6 +122,7 @@ type AList extends CollectionIndexedDynamic
     
     ' utility methods for group pushing/insertion
     method insarray( index%, other:object[] )
+        assert other and buffer and index>=0 and index<=length
         if other.length
             ' allocate space for new elements
             local oldlength% = length
@@ -156,6 +138,7 @@ type AList extends CollectionIndexedDynamic
         endif
     end method
     method inscollection( index%, other:Collection )
+        assert other and buffer and index>=0 and index<=length
         local otherlength% = other.size()
         if otherlength
             ' allocate space for new elements

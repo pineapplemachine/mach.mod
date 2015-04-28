@@ -122,9 +122,9 @@ end type
 
 
 ' Base type for linked list nodes
-type CollectionIndexedLinkedNode abstract
+type CollectionIndexedLinkedNode extends CollectionNode abstract
     
-    field value:object
+    ' nothing to see here
     
 end type
 

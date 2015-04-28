@@ -15,16 +15,6 @@ rem
 endrem
 type CollectionIndexed extends Collection abstract
 
-    ' current number of items in the collection
-    field length%
-    
-    method size%()
-        return length
-    end method
-    method empty%()
-        return length = 0
-    end method
-
     ' get first/last element
     method first:object()
         return get(0)

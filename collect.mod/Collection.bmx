@@ -5,28 +5,34 @@ rem
     
     Data structures:
         IMPLEMENTED
-            Random access list (List)
+            AList   Arraylist
+            LList   Cyclic doubly-linked list
+            Heap    Binary heap
+            UTree   Unstructured tree
         PARTIAL
-            Binary heap (Heap)
+            Hash    Hash table
+            DMap    novel?
         TODO
-            Splayed and red-black binary search trees (Tree)
-            Trie (Trie)
-            Hash table (Hash)
-            Multimap: a Hash containing Lists (MMap)
-            Linked list (LList)
-            Thread-safe list (ThreadedList)
-            Thread-safe hash (ThreadedHash)
-            N-dimensional vectors (Vector)
-            N-dimensional matricies (Matrix)
-            Graph (Graph)
-            Bit array (Bits)
-            Bignum (Bignum)
-            N-dimensional spatial hash (SHash)
-            Cache (Cache)
-            Ordered list (OList)
-            Rope
-            Skip list
-            Unrolled linked list
+            BTree   Binary search tree
+            Trie    Trie
+            Graph   Graph with edges and nodes
+            Cache   Cache
+            MMap    Multimap
+            ThList  Thread-safe list
+            ThHash  Thread-safe hash
+            Vector  N-dimensional vector
+            Matrix  N-dimensional matrix
+            Bits    Bit array
+            Bignum  Arbitrary-precision number
+            SHash   Spatial hash
+            OList   Ordered list
+            Rope    Rope
+            SList   Skip list
+            UList   Unrolled linked list
+            ITree   Interval tree
+            STree   Segment tree
+            QTree   Quadtree
+            OTree   Octtree
     
 endrem
 
@@ -37,6 +43,18 @@ type Collection abstract
     const EXCEPTION_UNIMPLEMENTED$ = "Operation is not applicable to this class"
     ' string to throw when a weird out-of-bounds access happens
     const EXCEPTION_WEIRD_OOB$ = "Unanticipated index out of bounds"
+
+    ' current number of items in the collection
+    field length%
+    
+    ' return the total number of items in the collection
+    method size%()
+        return length
+    end method
+    ' returns true if the collection is empty, false otherwise
+    method empty%()
+        return length = 0
+    end method
 
     ' return an enumerator for the items in the collection
     method enum:Enumerator()
@@ -52,14 +70,6 @@ type Collection abstract
     ' clear all items from the collection without regard for how cozy it might rest with the GC
     method clearfast:Collection()
         return clear()
-    end method
-    ' return the total number of items in the collection
-    method size%()
-        throw EXCEPTION_UNIMPLEMENTED; return null
-    end method
-    ' returns true if the collection is empty, false otherwise
-    method empty%()
-        throw EXCEPTION_UNIMPLEMENTED; return null
     end method
     ' insert all items from another similar collection into this one
     method extend:Collection( other:Collection )
@@ -133,5 +143,12 @@ type Enumerator abstract
     method ObjectEnumerator:Enumerator()
         return self
     end method
+    
+end type
+
+' base node class (any collection using nodes should have those nodes inherit from this base class)
+type CollectionNode abstract
+
+    field value:object
     
 end type
