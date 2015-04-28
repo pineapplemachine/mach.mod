@@ -25,3 +25,5 @@
 
 # Ignore bmx build dirs
 *.bmx/*
+*.x86.o
+*.x86.s
