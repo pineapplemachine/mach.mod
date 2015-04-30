@@ -72,8 +72,8 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     method array:Collection( values:object[] )
         assert values
         rebuffer( values.length )
-        for local value:object = eachin values
-            push( value )
+        for local i% = 0 until values.length
+            buffer[i] = values[i]
         next
         return self
     end method
@@ -96,6 +96,7 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     ' copy buffer from one collection to another
     method copybuffer( target:Collection )
         local targ:CollectionIndexedDynamic = CollectionIndexedDynamic( target )
+        assert targ
         targ.buffersizemin = buffersizemin
         targ.buffersizemax = buffersizemax
         targ.buffersizedec = buffersizedec
@@ -111,6 +112,7 @@ type CollectionIndexedDynamic extends CollectionIndexed abstract
     
     ' set parameters for buffer resizing
     method setbuffer:CollectionIndexedDynamic( minsize%, maxsize%, decsize#, incsize#, decallow%, incallow%, sparse# )
+        assert minsize > 0 and maxsize > minsize and decsize < 1 and incsize > 1 and sparse < 1
         buffersizemin = minsize
         buffersizemax = maxsize
         buffersizedec = decsize

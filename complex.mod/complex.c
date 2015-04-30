@@ -46,12 +46,3 @@ cop(bcadd, +)
 cop(bcsub, -)
 cop(bcmul, *)
 cop(bcdiv, /)
-
-// int main(){
-//     cx* x = makecomplex(1,1);
-//     cx* y = bcadd(x,x);
-//     printf("%f + %fi", bcreal(y), bcimag(y));
-//     return 0;
-// }
-
-
