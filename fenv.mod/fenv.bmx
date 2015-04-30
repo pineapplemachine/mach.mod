@@ -1,6 +1,11 @@
 superstrict
-import "fenv.c"
 
+module mach.fenv
+moduleinfo "License: Apache 2.0"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "30 Apr 2015: Added to mach.mod"
+
+import "fenv.c"
 private
 extern "c"
     ' faux constants
@@ -29,12 +34,11 @@ extern "c"
     function cfegetexceptflag%(a@@ ptr,b%) = "fegetexceptflag"
     function cfesetexceptflag%(a@@ ptr,b%) = "fesetexceptflag"
 endextern
+public
 
-type FEException
-end type
-
+' Container for fenv functions
 type fenv
-    ' faux constants (blitzmax's shady externing means these things that should be constants need to be represented as globals instead)
+    ' faux constants
     global FE_DFL_ENV:fenv_t = fenv.fedflenv()
     global FE_DIVBYZERO% = cfedivbyzero()
     global FE_INEXACT% = cfeinexact()

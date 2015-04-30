@@ -49,9 +49,9 @@ type complex
     rem
         bbdoc: Initializes a new complex number object given a C pointer to some
         double _Complex
+        returns: The complex number object itself.
         about: Setting multiple complex objects to refer to the same double _Complex
         will result in memory management fuckups, so don't do that.
-        returns: The complex number object itself.
     endrem
     method init:complex(p@ ptr)
         if self.p cfreecomplex(self.p)
@@ -61,9 +61,9 @@ type complex
     
     rem
         bbdoc: Sets the real and imaginary components of this complex number object.
+        returns: The complex number object itself.
         about: Use it like a constructor! e.g. complex mycomplex = new complex.set(i, j)
         where i is the real component and j is the imaginary component.
-        returns: The complex number object itself.
     endrem
     method set:complex(i!, j!)
         if p cfreecomplex(p)
