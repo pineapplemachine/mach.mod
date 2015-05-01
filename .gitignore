@@ -1,9 +1,7 @@
 # Ignore all
 *
-
 # Unignore all with extensions
 !*.*
-
 # Unignore all dirs
 !*/
 
@@ -11,20 +9,13 @@
 !*README
 !*LICENSE
 
-# Ignore DS_Store
 *.DS_Store
-
-# Ignore exe
 *.exe
-
-# Ignore app
 *.app
-
-# Ignore blitzmax backups
 *.bmx.bak
-
-# Ignore bmx build dirs
 *.bmx/*
 *.x86.o
 *.x86.s
 *.x86.i
+*_inprogress/*
+*/test.bmx
