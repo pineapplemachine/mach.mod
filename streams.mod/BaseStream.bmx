@@ -13,6 +13,8 @@ type FlushStreamException extends BaseStreamException
 end type
 type CloseStreamException extends BaseStreamException
 end type
+type OpenStreamException extends BaseStreamException
+end type
 
 ' base class contains basic operations for reading to/writing from a stream
 ' to add reading/writing for another type of stream, extend this class

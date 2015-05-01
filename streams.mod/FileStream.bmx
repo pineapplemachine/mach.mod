@@ -1,4 +1,5 @@
 superstrict
+import brl.blitz
 import "BaseStream.bmx"
 
 private
@@ -6,7 +7,6 @@ extern "c"
 const SEEK_SET% = 0
 const SEEK_CUR% = 1
 const SEEK_END% = 2
-function cfileopen%( filename$, mode$ ) = "fopen"
 function cfileclose( cfilestream% ) = "fclose"
 function cfileread%( buf:byte ptr, size%, count%, cfilestream% ) = "fread"
 function cfilewrite%( buf:byte ptr, size%, count%, cfilestream% ) = "fwrite"
@@ -19,6 +19,7 @@ public
 
 type FileStream extends BaseStream
     
+    ' faux constants
     const MODE_READ$ = "rb"
     const MODE_WRITE$ = "wb"
     const MODE_APPEND$ = "ab"
@@ -97,9 +98,16 @@ type FileStream extends BaseStream
         openfile(path, MODE_READWRITE)
         return self
     end method
+    method create:FileStream(path$)
+        allowread = true
+        allowwrite = true
+        openfile(path, MODE_CREATE)
+        return self
+    end method
     method openfile:FileStream(path$, mode$)
         path=path.Replace( "\","/" )
-        cfilestream = cfileopen(path, mode)
+        cfilestream = fopen_(path, mode)
+        if not cfilestream throw new OpenStreamException
         return self
     end method
     
