@@ -1,9 +1,9 @@
 superstrict
 
-'module mach.math
-'moduleinfo "License: Apache 2.0"
-'moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
-'moduleinfo "30 Apr 2015: Added to mach.mod"
+module mach.math
+moduleinfo "License: Apache 2.0"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "30 Apr 2015: Added to mach.mod"
 
 import "math.c"
 private

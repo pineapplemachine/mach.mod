@@ -17,5 +17,6 @@
 *.x86.o
 *.x86.s
 *.x86.i
+*.x86.a
 *_inprogress/*
 */test.bmx
