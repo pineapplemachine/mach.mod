@@ -58,16 +58,3 @@ type StdStreamIO extends StreamIO
         outstream.writebuffer(buffer, count)
     end method
 end type
-
-global std:StdStreamIO = new StdStreamIO
-
-' These functions are here for convenience - but I recommend you stick to using std.in, std.out, and std.err directly.
-function input$(prompt$ = "> ")
-    return std.in(prompt)
-end function
-function print(value$)
-    std.out(value)
-end function
-function error(value$)
-    std.err(value)
-end function
