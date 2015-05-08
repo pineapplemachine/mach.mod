@@ -1,8 +1,13 @@
 superstrict
-import "BaseStream.bmx"
+
+module mach.ramstream
+moduleinfo "License: Apache 2.0"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "8 May 2015: Added to mach.mod"
+
+import mach.basestream
 
 Type RamStream extends BaseStream
-    
     field allowread%
     field allowwrite%
     field pointer:byte ptr
@@ -79,5 +84,4 @@ Type RamStream extends BaseStream
         allowread = true
         allowwrite = false
     end method
-    
 end type

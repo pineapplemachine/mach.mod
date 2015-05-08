@@ -1,9 +1,14 @@
 superstrict
-import brl.blitz
-import "BaseStreamIO.bmx"
+
+module mach.binarystreamio
+moduleinfo "License: Apache 2.0"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "8 May 2015: Added to mach.mod"
+
+import mach.streamio
 
 ' read/write binary data
-type BinaryStreamIO extends BaseStreamIO
+type BinaryStreamIO extends BasicStreamIO
     method init:BinaryStreamIO(stream:BaseStream)
         target(stream)
         return self

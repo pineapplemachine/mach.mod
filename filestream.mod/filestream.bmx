@@ -1,6 +1,11 @@
 superstrict
-import brl.blitz
-import "BaseStream.bmx"
+
+module mach.filestream
+moduleinfo "License: Apache 2.0"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "8 May 2015: Added to mach.mod"
+
+import mach.basestream
 
 private
 extern "c"
@@ -14,11 +19,11 @@ function cfflush%( cfilestream% ) = "fflush"
 function cfseek%( cfilestream%, offset%, origin% ) = "fseek"
 function cftell%( cfilestream% ) = "ftell"
 function cfeof%( cfilestream% ) = "feof"
+Function fopen_%( file$, mode$ ) ' Comes from pub.stdc
 endextern
 public
 
 type FileStream extends BaseStream
-    
     ' faux constants
     const MODE_READ$ = "rb"
     const MODE_WRITE$ = "wb"
@@ -109,7 +114,6 @@ type FileStream extends BaseStream
         if not cfilestream throw new OpenStreamException
         return self
     end method
-    
 end type
 
 

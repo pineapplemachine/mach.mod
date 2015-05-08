@@ -1,9 +1,14 @@
 superstrict
 
+module mach.basestream
+moduleinfo "License: Apache 2.0"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "8 May 2015: Added to mach.mod"
+
 import mach.exception
 
 ' Various exceptions
-type BaseStreamException extends Exception
+type StreamException extends Exception
 end type
 type ReadStreamException extends Exception
 end type
