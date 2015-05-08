@@ -1,0 +1,1 @@
+The intent of this module is to make enumeration easier and to provide a sane basis for all enumerator implementations. Enumerators can be registered via the Enumerator.register() function and retreived for some arbitrary object via Enumerator.get().
