@@ -1,19 +1,21 @@
 superstrict
 
+import mach.exception
+
 ' Various exceptions
-type BaseStreamException
+type BaseStreamException extends Exception
 end type
-type ReadStreamException extends BaseStreamException
+type ReadStreamException extends Exception
 end type
-type WriteStreamException extends BaseStreamException
+type WriteStreamException extends Exception
 end type
-type SeekStreamException extends BaseStreamException
+type SeekStreamException extends Exception
 end type
-type FlushStreamException extends BaseStreamException
+type FlushStreamException extends Exception
 end type
-type CloseStreamException extends BaseStreamException
+type CloseStreamException extends Exception
 end type
-type OpenStreamException extends BaseStreamException
+type OpenStreamException extends Exception
 end type
 
 ' base class contains basic operations for reading to/writing from a stream

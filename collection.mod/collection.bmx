@@ -1,7 +1,8 @@
 superstrict
+import mach.exception
 import "../enumeration.mod/enumeration.bmx"
 
-type CollectionException
+type CollectionException extends Exception
 end type
 type CollectionNotImplementedException extends CollectionException
 end type

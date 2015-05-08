@@ -1,6 +1,7 @@
 superstrict
+import mach.exception
 
-type EnumeratorException
+type EnumeratorException extends Exception
 end type
 type EnumeratorNotFoundException extends EnumeratorException
 end type
