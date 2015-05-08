@@ -3,4 +3,4 @@ This directory contains misc utilities for enhancing the module-making experienc
 Scripts with the extension *.sh are meant for unix systems, with *.bat are meant for windows. Identically-named scripts serve identical functionalities.
 
 makemodule.*
-This script helpfully creates symbolic links in your BlitzMax mod directory which refer to modules in the mach.mod repository. Very useful if, like me, your repo isn't located within your blitzmax directory, and if you want easier control over which modules are active at any given time.
+This script helpfully creates symbolic links in your BlitzMax mod directory which refer to modules in the mach.mod repository. Very useful if, like me, your repo isn't located within your blitzmax directory, and if you want easier control over which modules are active at any given time. Before using these scripts please edit the path variables within them to ensure that they do in fact refer to your mach.mod repo and your mod folder.
