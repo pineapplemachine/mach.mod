@@ -9,17 +9,17 @@ import mach.basestream
 
 private
 extern "c"
-const SEEK_SET% = 0
-const SEEK_CUR% = 1
-const SEEK_END% = 2
-function cfclose( cfilestream% ) = "fclose"
-function cfread%( buf:byte ptr, size%, count%, cfilestream% ) = "fread"
-function cfwrite%( buf:byte ptr, size%, count%, cfilestream% ) = "fwrite"
-function cfflush%( cfilestream% ) = "fflush"
-function cfseek%( cfilestream%, offset%, origin% ) = "fseek"
-function cftell%( cfilestream% ) = "ftell"
-function cfeof%( cfilestream% ) = "feof"
-Function fopen_%( file$, mode$ ) ' Comes from pub.stdc
+    const SEEK_SET% = 0
+    const SEEK_CUR% = 1
+    const SEEK_END% = 2
+    function cfclose( cfilestream% ) = "fclose"
+    function cfread%( buf:byte ptr, size%, count%, cfilestream% ) = "fread"
+    function cfwrite%( buf:byte ptr, size%, count%, cfilestream% ) = "fwrite"
+    function cfflush%( cfilestream% ) = "fflush"
+    function cfseek%( cfilestream%, offset%, origin% ) = "fseek"
+    function cftell%( cfilestream% ) = "ftell"
+    function cfeof%( cfilestream% ) = "feof"
+    function fopen_%( file$, mode$ ) ' Comes from pub.stdc
 endextern
 public
 
