@@ -7,13 +7,13 @@ extern "c"
 const SEEK_SET% = 0
 const SEEK_CUR% = 1
 const SEEK_END% = 2
-function cfileclose( cfilestream% ) = "fclose"
-function cfileread%( buf:byte ptr, size%, count%, cfilestream% ) = "fread"
-function cfilewrite%( buf:byte ptr, size%, count%, cfilestream% ) = "fwrite"
-function cfileflush( cfilestream% ) = "fflush"
-function cfileseek( cfilestream%, offset%, origin% ) = "fseek"
-function cfiletell%( cfilestream% ) = "ftell"
-function cfileeof%( cfilestream% ) = "feof"
+function cfclose( cfilestream% ) = "fclose"
+function cfread%( buf:byte ptr, size%, count%, cfilestream% ) = "fread"
+function cfwrite%( buf:byte ptr, size%, count%, cfilestream% ) = "fwrite"
+function cfflush%( cfilestream% ) = "fflush"
+function cfseek%( cfilestream%, offset%, origin% ) = "fseek"
+function cftell%( cfilestream% ) = "ftell"
+function cfeof%( cfilestream% ) = "feof"
 endextern
 public
 
@@ -31,53 +31,52 @@ type FileStream extends BaseStream
     field allowwrite%
     field cfilestream%
     
-    method fileseek%(value%)
+    method seek%(value%)
         assert cfilestream
-        cfileseek(cfilestream, value, SEEK_SET)
-        return true
+        return cfseek(cfilestream, value, SEEK_SET)=0
     end method
     method flush%()
         assert cfilestream
-        cfileflush(cfilestream)
-        return true
+        return cfflush(cfilestream)=0
     end method
     method close%()
         assert cfilestream
-        cfileclose(cfilestream)
+        local status% = cfclose(cfilestream)
         cfilestream = 0
-        return true
+        return status
     end method
     method active%()
         return cfilestream <> 0
     end method
     method pos%()
         assert cfilestream
-        return cfiletell(cfilestream)
+        return cftell(cfilestream)
     end method
     method size%()
-        cfileseek(cfilestream, 0, SEEK_END)
-        local value% = cfiletell(cfilestream)
-        cfileseek(cfilestream, 0, SEEK_SET)
+        assert cfilestream
+        local current% = cftell(cfilestream)
+        cfseek(cfilestream, 0, SEEK_END)
+        local value% = cftell(cfilestream)
+        cfseek(cfilestream, current, SEEK_SET)
         return value
     end method
     method eof%()
-        return cfileeof(cfilestream)
+        assert cfilestream
+        return cfeof(cfilestream)
     end method
     method readbuffer%(buffer:byte ptr, count%)
-        assert cfilestream
+        assert cfilestream and count
         if not allowread throw new ReadStreamException
-        cfileread(buffer, 1, count, cfilestream)
-        return true
+        return cfread(buffer, 1, count, cfilestream)=count
     end method
     method writebuffer%(buffer:byte ptr, count%)
-        assert cfilestream
+        assert cfilestream and count
         if not allowwrite throw new WriteStreamException
-        cfilewrite(buffer, 1, count, cfilestream)
-        return true
+        return cfwrite(buffer, 1, count, cfilestream)=count
     end method
     method skip%(count%)
-        ' TODO
-        return true
+        assert cfilestream
+        return cfseek(cfilestream, count, SEEK_CUR)=0
     end method
     
     method read:FileStream(path$)

@@ -188,12 +188,8 @@ type BinaryStreamIO extends BaseStreamIO
             local currentbyteptr:byte ptr = varptr currentbyte
             repeat
                 local reading% = targetstream.readbuffer(currentbyteptr, 1)
-                if not reading
-                    throw new ReadStreamException
-                elseif not currentbyte
+                if (not reading) or (not currentbyte) or targetstream.eof()
                     exit
-                elseif targetstream.eof()
-                    throw new ReadStreamException
                 else
                     count :+ 1
                 endif
@@ -208,18 +204,33 @@ type BinaryStreamIO extends BaseStreamIO
             local currentshortptr:byte ptr = byte ptr(varptr currentshort)
             repeat
                 local reading% = targetstream.readbuffer(currentshortptr, 2)
-                if not reading
-                    throw new ReadStreamException
-                elseif not currentshort 
+                if (not reading) or (not currentshort) or targetstream.eof()
                     exit
-                elseif targetstream.eof()
-                    throw new ReadStreamException
                 else
                     count :+ 1
                 endif
             forever
             targetstream.seek(start)
             return count
+        end method
+        method getlinelength%()
+            local count% = 0
+            local registercount% = 0
+            local start% = pos()
+            local currentbyte:byte
+            local currentbyteptr:byte ptr = varptr currentbyte
+            repeat
+                local reading% = targetstream.readbuffer(currentbyteptr, 1)
+                if (not reading) or (currentbyte = 0) or (currentbyte = 10)
+                    exit
+                elseif currentbyte = 13
+                    registercount :+ 1
+                else
+                    count :+ 1
+                endif
+            forever
+            targetstream.seek(start)
+            return count - registercount
         end method
         
         ' null-terminated cstring, one byte per character
@@ -240,6 +251,37 @@ type BinaryStreamIO extends BaseStreamIO
         end method
         method writewstring(value:string)
             writeshortstring(value, true)
+        end method
+        
+        ' newline-terminated c string (stops at null or \n, whichever comes first. ignores \r.)
+        field DEFAULT_READLINE_BUFFER_SIZE% = 1024
+        method readline:string(buffersize% = 0)
+            if buffersize <= 0 buffersize = DEFAULT_READLINE_BUFFER_SIZE
+            local buffer:byte[] = new byte[buffersize]
+            local count% = 0
+            local currentbyte:byte
+            local currentbyteptr:byte ptr = varptr currentbyte
+            repeat
+                local reading% = targetstream.readbuffer(currentbyteptr, 1)
+                if (not reading) or (currentbyte = 0) or (currentbyte = 10)
+                    exit
+                elseif currentbyte <> 13
+                    if count >= buffer.length
+                        buffer = buffer[..buffer.length shl 1]
+                    endif
+                    buffer[count] = currentbyte
+                    count :+ 1
+                endif
+            forever
+            return string.frombytes( buffer, count )
+        end method
+        method writeline(value:string)
+            writebytestring(value, false)
+            writenewline()
+        end method
+        field newlineterminator:byte[] = [13:byte, 10:byte]
+        method writenewline()
+            targetstream.writebuffer(newlineterminator, newlineterminator.length)
         end method
         
         ' pascal string, one byte length prefix and one byte per character

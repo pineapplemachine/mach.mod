@@ -13,29 +13,16 @@ type BaseStreamIO abstract
     ' refer directly to target BaseStream methods
     method seek(value%)
         assert targetstream
-        ?debug
-            assert targetstream.seek(value) else new SeekStreamException
-        ?not debug
-            targetstream.seek(value)
-        ?
+        if targetstream.seek(value) throw new SeekStreamException
     end method
     method flush()
         assert targetstream
-        ?debug
-            assert targetstream.flush() else new FlushStreamException
-        ?not debug
-            targetstream.flush()
-        ?
+        if targetstream.flush() throw new FlushStreamException
     end method
     method close(flushstream%=true)
         assert targetstream
-        ?debug
-            if flushstream assert targetstream.flush() else new FlushStreamException
-            assert targetstream.close() else new CloseStreamException
-        ?not debug
-            if flushstream targetstream.flush()
-            targetstream.close()
-        ?
+        if targetstream.flush() throw new FlushStreamException
+        if targetstream.close() throw new CloseStreamException
     end method
     method active%()
         if targetstream
@@ -58,19 +45,11 @@ type BaseStreamIO abstract
     end method
     method readbuffer(buffer:byte ptr, count%)
         assert targetstream
-        ?debug
-            assert targetstream.readbuffer(buffer, count) else new ReadStreamException
-        ?not debug
-            targetstream.readbuffer(buffer, count)
-        ?
+        targetstream.readbuffer(buffer, count)
     end method
     method writebuffer(buffer:byte ptr, count%)
         assert targetstream
-        ?debug
-            assert targetstream.writebuffer(buffer, count) else new WriteStreamException
-        ?not debug
-            targetstream.writebuffer(buffer, count)
-        ?
+        targetstream.writebuffer(buffer, count)
     end method
 end type
 
