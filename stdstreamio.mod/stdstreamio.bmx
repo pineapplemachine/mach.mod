@@ -1,7 +1,7 @@
 superstrict
 
 module mach.stdstreamio
-moduleinfo "License: Apache 2.0"
+moduleinfo "License: zlib/libpng"
 moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
 moduleinfo "8 May 2015: Added to mach.mod"
 
