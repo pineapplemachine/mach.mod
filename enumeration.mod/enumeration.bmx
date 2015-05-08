@@ -1,4 +1,10 @@
 superstrict
+
+module mach.enumeration
+moduleinfo "License: zlib/libpng"
+moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
+moduleinfo "30 Apr 2015: Added to mach.mod"
+
 import mach.exception
 
 type EnumeratorException extends Exception
@@ -17,7 +23,7 @@ type Enumerator abstract
         next
         return null
     end function
-    function exists:Enumerator(target:object)
+    function exists%(target:object)
         return Enumerator.get(target) <> null
     end function
     function register%(func:Enumerator(target:object))
