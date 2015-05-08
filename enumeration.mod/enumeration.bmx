@@ -3,8 +3,6 @@ import mach.exception
 
 type EnumeratorException extends Exception
 end type
-type EnumeratorNotFoundException extends EnumeratorException
-end type
 type EnumeratorNotImplementedException extends EnumeratorException
 end type
 
@@ -17,7 +15,10 @@ type Enumerator abstract
             local enum:Enumerator = func(target)
             if enum return enum
         next
-        throw new EnumeratorNotFoundException
+        return null
+    end function
+    function exists:Enumerator(target:object)
+        return Enumerator.get(target) <> null
     end function
     function register%(func:Enumerator(target:object))
         if registeredcount = registered.length
