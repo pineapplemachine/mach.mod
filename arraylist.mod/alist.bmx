@@ -315,7 +315,7 @@ type AList extends List
     end method
 end type
 
-type AListEnumerator extends Enumerator
+type AListEnumerator extends AddValueEnumerator
     field target:AList
     field index% = -1
     field currentindex%
@@ -348,9 +348,13 @@ type AListEnumerator extends Enumerator
     method count%()
         return length
     end method
-    method reset()
-        index = -1
+    method resethead()
         length = target.length
+        index = -1
+    end method
+    method resettail()
+        length = target.length
+        index = length
     end method
     
     method remove:object()
@@ -362,7 +366,7 @@ type AListEnumerator extends Enumerator
         length :- 1
         return value
     end method
-    method add(value:object)
+    method addlast(value:object)
         target.addlast(value)
     end method
 end type

@@ -4,6 +4,7 @@ module mach.enumeration
 moduleinfo "License: zlib/libpng"
 moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
 moduleinfo "30 Apr 2015: Added to mach.mod"
+moduleinfo "11 May 2015: Added resethead and resettail methods, AddValueEnumerator and AddKeyValueEnumerator classes."
 
 import mach.exception
 
@@ -16,7 +17,7 @@ type Enumerator abstract
     global registeredcount% = 0
     global registered:Enumerator(target:object)[64]
     function get:Enumerator(target:object)
-        for local i%=0 until registeredcount
+        for local i%=registeredcount-1 to 0 step -1
             local func:Enumerator(target:object) = registered[i]
             local enum:Enumerator = func(target)
             if enum return enum
@@ -50,7 +51,17 @@ type Enumerator abstract
     method count%()
         throw new EnumeratorNotImplementedException
     end method
-    method reset()
+    method reset(tail% = false)
+        if tail
+            resettail()
+        else
+            resethead()
+        endif
+    end method
+    method resethead()
+        throw new EnumeratorNotImplementedException
+    end method
+    method resettail()
         throw new EnumeratorNotImplementedException
     end method
     
@@ -60,6 +71,23 @@ type Enumerator abstract
     
     method ObjectEnumerator:Enumerator()
         return self
+    end method
+end type
+
+type AddValueEnumerator extends Enumerator abstract
+    method add(value:object)
+        addlast(value)
+    end method
+    method addfirst(value:object)
+        throw new EnumeratorNotImplementedException
+    end method
+    method addlast(value:object)
+        throw new EnumeratorNotImplementedException
+    end method
+end type
+type AddKeyValueEnumerator extends Enumerator abstract
+    method add(key:object, value:object)
+        throw new EnumeratorNotImplementedException
     end method
 end type
 
@@ -78,8 +106,11 @@ type ArrayEnumerator extends Enumerator abstract
     method count%()
         return length
     end method
-    method reset()
+    method resethead()
         index = -1
+    end method
+    method resettail()
+        index = length
     end method
 end type
 
