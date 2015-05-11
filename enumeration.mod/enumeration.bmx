@@ -45,18 +45,24 @@ type Enumerator abstract
         throw new EnumeratorNotImplementedException
     end method
     
-    method onstep%()
-        throw new EnumeratorNotImplementedException
-    end method
+    ''' Indicates the number of steps that the Enumerator has taken so far.
+    ''' The value will be incremented when enumerating forward and decremented when enumerating backward.
+    field at%
+    
+    ''' Returns the number of elements that the Enumerator will have enumerated over by the time enumeration is finished.
     method count%()
         throw new EnumeratorNotImplementedException
     end method
+    
+    ''' Resets the Enumerator to the beginning (or end) of the enumerated object.
+    ''' Param tail being set to true indicates that enumeration should be reset to the end, otherwise to the beginning.
     method reset(tail% = false)
         if tail
             resettail()
         else
             resethead()
         endif
+        at = 0
     end method
     method resethead()
         throw new EnumeratorNotImplementedException
@@ -100,9 +106,6 @@ type ArrayEnumerator extends Enumerator abstract
     method hasprev%()
         return index > 0
     end method
-    method onstep%()
-        return index
-    end method
     method count%()
         return length
     end method
@@ -128,10 +131,12 @@ type ObjectArrayEnumerator extends ArrayEnumerator
     end method
     method nextobject:object()
         index :+ 1
+        at :+ 1
         return array[index]
     end method
     method prevobject:object()
         index :- 1
+        at :- 1
         return array[index]
     end method
 end type

@@ -36,14 +36,22 @@ type TListEnumerator extends AddValueEnumerator
     end method
     method nextobject:object()
         link = link._succ
+        at :+ 1
         return link._value
     end method
     method prevobject:object()
         link = link._pred
+        at :- 1
         return link._value
+    end method
+    method count%()
+        return target.count()
     end method
     method reset(tail% = false)
         link = target._head
+        firstlink = target._head._succ
+        lastlink = target._head._pred
+        at = 0
     end method
     
     method remove:object()

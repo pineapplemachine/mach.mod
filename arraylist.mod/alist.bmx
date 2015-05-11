@@ -332,6 +332,7 @@ type AListEnumerator extends AddValueEnumerator
     end method
     method nextobject:object()
         index :+ 1
+        at :+ 1
         return target.buffer[index]
     end method
     method hasprev%()
@@ -339,12 +340,10 @@ type AListEnumerator extends AddValueEnumerator
     end method
     method prevobject:object()
         index :- 1
+        at :- 1
         return target.buffer[index]
     end method
     
-    method onstep%()
-        return index
-    end method
     method count%()
         return length
     end method
@@ -370,4 +369,3 @@ type AListEnumerator extends AddValueEnumerator
         target.addlast(value)
     end method
 end type
-

@@ -4,6 +4,7 @@ module mach.filestream
 moduleinfo "License: zlib/libpng"
 moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
 moduleinfo "8 May 2015: Added to mach.mod"
+moduleinfo "11 May 2015: Added FileStream.append function"
 
 import mach.basestream
 
@@ -87,26 +88,27 @@ type FileStream extends BaseStream
     method read:FileStream(path$)
         allowread = true
         allowwrite = false
-        openfile(path, MODE_READ)
-        return self
+        return openfile(path, MODE_READ)
     end method
     method write:FileStream(path$)
         allowread = false
         allowwrite = true
-        openfile(path, MODE_WRITE)
-        return self
+        return openfile(path, MODE_WRITE)
     end method
     method open:FileStream(path$)
         allowread = true
         allowwrite = true
-        openfile(path, MODE_READWRITE)
-        return self
+        return openfile(path, MODE_READWRITE)
     end method
     method create:FileStream(path$)
         allowread = true
         allowwrite = true
-        openfile(path, MODE_CREATE)
-        return self
+        return openfile(path, MODE_CREATE)
+    end method
+    method append:FileStream(path$)
+        allowread = true
+        allowwrite = true
+        return openfile(path, MODE_READAPPEND)
     end method
     method openfile:FileStream(path$, mode$)
         path=path.Replace( "\","/" )
