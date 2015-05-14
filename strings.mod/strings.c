@@ -29,28 +29,32 @@ BBString *machStringFormat( BBString *str, BBArray *bitsarray, BBChar tokenchar 
                 
                 if( ch == tokenchar ){              // %%
                     tokenindex[ ontoken ] = FORMAT_TOKEN_ESCAPE;
-                }else if( ch == 115 || ch == 83 ){  // %s
+                }else if( ch == 's' || ch == 'S' ){ // %s
                     tokenindex[ ontoken ] = sindex++;
-                }else if( ch >= 48 && ch <= 57 ){   // %0, %1, %9, etc.
-                    tokenindex[ ontoken ] = ch - 48;
-                }else if( ch == 91 ){               // %[10], %[42], etc.
-                    tokenindex[ ontoken ] = 0; j = ++i;
-                    while( j < str->length && str->buf[j] != 93 ){ j++; } // find the closing brace
-                    if( j < str->length && j-i > 1 ){
-                        tokenlength[ ontoken ] += j-i;
-                        int digit = 1; k = i; i = j; while( --j>k ){ tokenindex[ ontoken ] += digit * (str->buf[j] - 48); digit *= 10; } // turn e.g. "512" into (int)512.
-                    }else{
-                        i = j; continue; // skip things like "%[...", "%[]"
+                }else if( ch >= '0' && ch <= '9' ){ // %0, %1, %9, etc.
+                    tokenindex[ ontoken ] = ch - '0';
+                }else if( ch == '[' ){              // %[10], %[42], etc.
+                    tokenindex[ ontoken ] = 0; j = i+2;
+                    while( j < str->length && str->buf[j] != ']' ){ j++; } // find the closing brace
+                    if( j < str->length ){
+                        tokenlength[ ontoken ] = j-i;
+                        int digit = 1; k = i; while( --j>k ){ tokenindex[ ontoken ] += digit * (str->buf[j]-'0'); digit *= 10; } // turn e.g. "512" into (int)512.
                     }
                 }
                 
-                if( tokenindex[ ontoken ] >= 0 ){
+                if( tokenindex[ ontoken ] == FORMAT_TOKEN_ESCAPE ){
+                    i += 2; size--; ontoken++;
+                }else if( tokenindex[ ontoken ] >= numbits ){
+                    i += tokenlength[ ontoken ];
+                }else if( tokenindex[ ontoken ] >= 0 ){
+                    i += tokenlength[ ontoken ];
                     size += bits[ tokenindex[ ontoken ] ]->length - tokenlength[ ontoken ]; ontoken++;
-                }else if( tokenindex[ ontoken ] == FORMAT_TOKEN_ESCAPE ){
-                    size--; ontoken++;
+                }else{
+                    i++;
                 }
+            }else{
+                i++;
             }
-            i++;
         }
         
         // build the resulting string
