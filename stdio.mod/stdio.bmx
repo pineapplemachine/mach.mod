@@ -16,6 +16,9 @@ end function
 function print(value$)
     std.out(value)
 end function
+function write(value$)
+    std.out(value, false)
+end function
 function error(value$)
     std.err(value)
 end function

@@ -14,31 +14,28 @@ type StdStreamIO extends StreamIO
     field errstream:BinaryStreamIO = new BinaryStreamIO.init( StdStream.err )
     
     field newline$ = "~r~n"
-    field nullstr$ = "null"
+    field nullstr$ = ""
     
     method in$(prompt:object)
-        if prompt
-            if not string(prompt) prompt = prompt.tostring()
-            outstream.writebytestring(string(prompt))
-            outstream.flush()
-        endif
+        if prompt write(prompt, outstream, false)
         return instream.readline()
     end method
-    method out(value:object="")
-        writeline(value, outstream)
+    method out(value:object="", newline%=true)
+        write(value, outstream, newline)
     end method
-    method err(value:object="")
-        writeline(value, errstream)
+    method err(value:object="", newline%=true)
+        write(value, errstream, newline)
     end method
     
-    method writeline(value:object="", target:BinaryStreamIO)
-        if value=null
-            target.writeline(nullstr)
-        elseif string(value)
-            target.writeline(string(value))
-        else
-            target.writeline(value.tostring())
+    method write(value:object="", target:BinaryStreamIO, newline%=true)
+        if string(value)
+            target.writebytestring(string(value))
+        elseif value
+            target.writebytestring(value.tostring())
+        elseif nullstr
+            target.writebytestring(nullstr)
         endif
+        if newline target.writebytestring(newline)
         target.flush()
     end method
     
