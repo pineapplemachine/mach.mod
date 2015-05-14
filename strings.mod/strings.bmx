@@ -19,9 +19,20 @@ end extern
 public
 
 type strings
-    function tostringarray$[](bits:object)
+    function objtostring$(bit:object)
+        if not bit
+            return ""
+        elseif string(bit)
+            return string(bit)
+        else
+            return bit.tostring()
+        endif
+    end function
+    function objtostringarray$[](bits:object)
         local strarray$[]
-        if string(bits)
+        if not bits
+            return new string[0]
+        elseif string(bits)
             strarray = [string(bits)]
         elseif string[](bits)
             strarray = string[](bits)
@@ -29,7 +40,7 @@ type strings
             local obits:object[] = object[](bits)
             strarray = new string[obits.length]
             for local i%=0 until obits.length
-                strarray[i] = obits[i].tostring()
+                strarray[i] = objtostring(obits[i])
             next
         else
             local enum:Enumerator = Enumerator.get(bits)
@@ -37,31 +48,33 @@ type strings
                 strarray = new string[enum.count()]
                 local i%=0
                 for local value:object = eachin enum
-                    strarray[i] = value.tostring()
+                    strarray[i] = objtostring(value)
                     i :+ 1
                 next
             else
-                strarray = [bits.tostring()]
+                strarray = [objtostring(bits)]
             endif
         endif
         return strarray
     end function
-    function tostringarrayarray$[][](bits:object)
+    function objtostringarrayarray$[][](bits:object)
         local strarrayarray$[][]
-        if string[][](bits)
+        if not bits
+            return new string[][0]
+        elseif string[][](bits)
             strarrayarray = string[][](bits)
         elseif object[][](bits)
             local obits:object[][] = object[][](bits)
             strarrayarray = new string[][obits.length]
             for local i%=0 until obits.length
-                strarrayarray[i] = tostringarray(obits[i])
+                strarrayarray[i] = objtostringarray(obits[i])
             next
         else
             local enum:Enumerator = Enumerator.get(bits)
             strarrayarray = new string[][enum.count()]
             local i%=0
             for local value:object = eachin enum
-                strarrayarray[i] = tostringarray(value)
+                strarrayarray[i] = objtostringarray(value)
                 i :+ 1
             next
         endif
@@ -69,23 +82,23 @@ type strings
     end function
     
     function join$(delim:object, bits:object)
-        local strbits$[] = tostringarray(bits)
-        return machStringJoinSub(delim.tostring(), strbits, 0, strbits.length)
+        local strbits$[] = objtostringarray(bits)
+        return machStringJoinSub(objtostring(delim), strbits, 0, strbits.length)
     end function
     function joinsub$(delim:object, bits:object, low%, up%)
-        return machStringJoinSub(delim.tostring(), tostringarray(bits), low, up)
+        return machStringJoinSub(objtostring(delim), objtostringarray(bits), low, up)
     end function
     
     function concat$(bits:object)
-        local strbits$[] = tostringarray(bits)
+        local strbits$[] = objtostringarray(bits)
         return machStringConcat(strbits, 0, strbits.length)
     end function
     function concatsub$(bits:object, low%, up%)
-        return machStringConcat(tostringarray(bits), low, up)
+        return machStringConcat(objtostringarray(bits), low, up)
     end function
     
     function interleave$(bits:object, start%=0, inc%=1)
-        local strbits$[][] = tostringarrayarray(bits)
+        local strbits$[][] = objtostringarrayarray(bits)
         return machStringInterleave(strbits, start, inc)
     end function
     
@@ -101,7 +114,6 @@ type strings
     ''' function will silently fail and the token will not be replaced.
     const FORMAT_TOKEN% = asc("%")
     function format$(str:object, sub:object, formattoken%=FORMAT_TOKEN)
-        return machStringFormat(str.tostring(), tostringarray(sub), formattoken)
+        return machStringFormat(objtostring(str), objtostringarray(sub), formattoken)
     end function
 end type
-
