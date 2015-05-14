@@ -1,5 +1,77 @@
 #include <brl.mod/blitz.mod/blitz_string.h>
 #include <brl.mod/blitz.mod/blitz_array.h>
+//#include <brl.mod/blitz.mod/blitz_unicode.h>
+#include "mach_unicode.h"
+#include <stdio.h>
+
+// Taken from bbStringToUpper
+BBChar machCharUpper( BBChar c ){
+    if( c<181 ){
+        return (c>='a' && c<='z') ? (c&~32) : c;
+    }else{
+        int lo=0, hi=sizeof(machToUpperData)/4-1;
+        while( lo<=hi ){
+            int mid=(lo+hi)/2;
+            if( c<machToUpperData[mid*2] ){
+                hi=mid-1;
+            }else if( c>machToUpperData[mid*2] ){
+                lo=mid+1;
+            }else{
+                return machToUpperData[mid*2+1];
+            }
+        }
+        return c;
+    }
+}
+
+// Taken from bbStringToLower
+BBChar machCharLower( BBChar c ){
+    if( c<192 ){
+        return (c>='A' && c<='Z') ? (c|32) : c;
+    }else{
+        int lo=0, hi=sizeof(machToLowerData)/4-1;
+        while( lo<=hi ){
+            int mid=(lo+hi)/2;
+            if( c<machToLowerData[mid*2] ){
+                hi=mid-1;
+            }else if( c>machToLowerData[mid*2] ){
+                lo=mid+1;
+            }else{
+                return machToLowerData[mid*2+1];
+            }
+        }
+    }
+}
+
+BBString *machStringCapFirst( BBString *str ){
+    if( str->length == 0 || (str->buf[0] >= 'A' && str->buf[0] <= 'Z') ){
+        return str;
+    }else{
+        BBString *cap = bbStringNew( str->length );
+        cap->buf[0] = machCharUpper( str->buf[0] );
+        memcpy( cap->buf + 1, str->buf + 1, (str->length - 1 )*sizeof(BBChar) );
+        return cap;
+    }
+}
+
+int machCharContained( BBChar c, BBChar* list, int len ){
+    for( int i=0; i<len; i++ ){
+        if( c == list[i] ){ return 1; }
+    }
+    return 0;
+}
+BBString *machStringCapWord( BBString *str, BBChar* whitespace, int numspace ){
+    BBString *cap = bbStringNew( str->length );
+    int i, j;
+    for( i=0; i<str->length; i++ ){
+        if( i == 0 || machCharContained( str->buf[i-1], whitespace, numspace ) ){
+            cap->buf[i] = machCharUpper( str->buf[i] );
+        }else{
+            cap->buf[i] = str->buf[i];
+        }
+    }
+    return cap;
+}
 
 #define FORMAT_TOKEN_ESCAPE -1
 #define FORMAT_TOKEN_INVALID -2
