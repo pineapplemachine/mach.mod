@@ -6,15 +6,26 @@ moduleinfo "Author: Sophie Kirschner (sophiek@pineapplemachine.com)"
 moduleinfo "8 May 2015: Added to mach.mod"
 
 import mach.stdstream
-import mach.binarystreamio
+import mach.stringstreamio
+import mach.linestreamio
 
 type StdStreamIO extends StreamIO
-    field instream:BinaryStreamIO = new BinaryStreamIO.init( StdStream.in )
-    field outstream:BinaryStreamIO = new BinaryStreamIO.init( StdStream.out )
-    field errstream:BinaryStreamIO = new BinaryStreamIO.init( StdStream.err )
+    field instream:LineStreamIO
+    field outstream:StringStreamIO
+    field errstream:StringStreamIO
     
     field newline$ = "~r~n"
     field nullstr$ = ""
+    
+    method init:StdStreamIO(instream:LineStreamIO=null, outstream:StringStreamIO=null, errstream:StringStreamIO=null)
+        self.instream = instream
+        self.outstream = outstream
+        self.errstream = errstream
+        if not self.instream self.instream = new LineStreamIO; self.instream.target( StdStream.in )
+        if not self.outstream self.outstream = new StringStreamIO; self.outstream.target( StdStream.out )
+        if not self.errstream self.errstream = new StringStreamIO; self.errstream.target( StdStream.err )
+        return self
+    end method
     
     method in$(prompt:object)
         if prompt write(prompt, outstream, false)
@@ -27,7 +38,7 @@ type StdStreamIO extends StreamIO
         write(value, errstream, newline)
     end method
     
-    method write(value:object="", target:BinaryStreamIO, newline%=true)
+    method write(value:object="", target:StringStreamIO, newline%=true)
         if string(value)
             target.writebytestring(string(value))
         elseif value

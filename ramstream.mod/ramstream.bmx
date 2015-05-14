@@ -18,6 +18,9 @@ Type RamStream extends BaseStream
         position = value
         assert position  >=  0 and (length = -1 or position < length)
     end method
+    method seekable%()
+        return true
+    end method
     method close%()
         pointer = null
     end method

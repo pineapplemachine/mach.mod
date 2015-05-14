@@ -41,6 +41,9 @@ type FileStream extends BaseStream
         assert cfilestream
         return cfseek(cfilestream, value, SEEK_SET)=0
     end method
+    method seekable%()
+        return true
+    end method
     method flush%()
         assert cfilestream
         return cfflush(cfilestream)=0

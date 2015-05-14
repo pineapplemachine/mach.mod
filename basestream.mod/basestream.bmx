@@ -30,6 +30,9 @@ type BaseStream abstract
     method seek%(value%)
         return false
     end method
+    method seekable%()
+        return false
+    end method
     ' flush stream output
     method flush%()
         return false

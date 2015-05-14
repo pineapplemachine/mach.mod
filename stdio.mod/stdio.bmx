@@ -7,7 +7,7 @@ moduleinfo "8 May 2015: Added to mach.mod"
 
 import mach.stdstreamio
 
-global std:StdStreamIO = new StdStreamIO
+global std:StdStreamIO = new StdStreamIO.init()
 
 ' These functions are here for convenience, but I recommend you stick to using std.in, std.out, and std.err directly.
 function input$(prompt$ = "> ")
