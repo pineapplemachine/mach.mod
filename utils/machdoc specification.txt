@@ -1,0 +1,46 @@
+MachDoc is conceived as a more concise alternative to BBDoc.
+
+Any class, function, method, constant, or variable declaration may be assigned some MachDoc.
+
+These conventions should be observed in order to maintain ease of parsing, but they should not be considered strict:
+Begin a sentence with "Returns" to describe a function or method's return value.
+Begin a sentence with "Param <argument name>" to describe that argument's purpose.
+Begin a sentence with anything else to provide general documentation.
+Begin a sentence of general documentation with the word "Private", "Public", or "Protected" to indicate the intended accessibility of some method or variable.
+If any text is enclosed within parentheses "(", ")" and if that text trails all other general documentation, that text is considered to be subsidiary general documentation, and should be displayed less prominently than other general documentation.
+
+These are special tokens, comprising MachDoc's meta-documentation:
+[Label <label1>, <label2>, ..., <labeln>] Every instance of MachDoc is considered to be labeled by the name of what it documents, e.g. a variable or function name prepended by the name of the class or other scope it appears in, if any. This token can be used to assign at least one additional label to some MachDoc. 
+[Copy <label>] If some other thing has been documented then this token can be used to refer to its entire documentation by its label. The % and format indicators are optional. When no label is specified the immediately preceding MachDoc is copied.
+[Inherit] Acts the same as [Copy <superclass>.<documented method name>]. Undocumented methods and methods with all parenthetical MachDoc are implicitly assumed to have this token at their beginning.
+[NoInherit] Is a counterpart to [Inherit] which specifies explicitly that documentation should not be inherited from a superclass' method.
+
+MachDoc can also be placed on the same line as what it documents, after its definition.
+Blank MachDoc defined in this way copies the immediately preceding MachDoc.
+
+[Copy <label> % <format1>, <format2>, ..., <formatn>] Can be used to format generic MachDoc. Here's an example:
+    ''' [Label thiefdoc] Attempts to steal your %s and %s it while you're not looking. Returns true if successful, false otherwise.
+    
+    ''' [Copy thiefdoc % sandwich, eat]
+    function stealsandwich%()
+        return false
+    end function
+    
+    ''' [Copy thiefdoc % supper, toss]
+    function throwsupperaway%()
+        return false
+    end function
+
+Here are more examples of MachDoc:
+
+    ''' Does more stuff for each item in items.
+    ''' Returns the number of steps taken.
+    ''' Param items is an array containing the items which stuff should be done to.
+    function dostuff%(items:object[])
+        local i% = 0
+        for local item:object = eachin items
+            morestuff(items)
+            i :+ 1
+        next
+        return i
+    end function
