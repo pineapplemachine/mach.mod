@@ -1,11 +1,9 @@
 #include <brl.mod/blitz.mod/blitz_string.h>
 #include <brl.mod/blitz.mod/blitz_array.h>
-#include <stdio.h>
 
 #define FORMAT_TOKEN_ESCAPE -1
 #define FORMAT_TOKEN_INVALID -2
 BBString *machStringFormat( BBString *str, BBArray *bitsarray, BBChar tokenchar ){
-    printf("ISSUES \n");
     if( bitsarray==&bbEmptyArray ){
         return &bbEmptyString;
     }else{
@@ -27,9 +25,7 @@ BBString *machStringFormat( BBString *str, BBArray *bitsarray, BBChar tokenchar 
             BBChar ch = str->buf[i];
             if( (ch == tokenchar) && ((i+1) < str->length) ){
                 ch = str->buf[i+1]; tokenposition[ ontoken ] = i; tokenlength[ ontoken ] = 2;
-                tokenindex[ ontoken ] = numbits;
-                
-                printf("ISSUES %d \n", tokenindex[ontoken]);
+                tokenindex[ ontoken ] = FORMAT_TOKEN_INVALID;
                 
                 if( ch == tokenchar ){              // %%
                     tokenindex[ ontoken ] = FORMAT_TOKEN_ESCAPE;
@@ -46,11 +42,8 @@ BBString *machStringFormat( BBString *str, BBArray *bitsarray, BBChar tokenchar 
                     }else{
                         i = j; continue; // skip things like "%[...", "%[]"
                     }
-                }else{
-                    tokenindex[ ontoken ] = FORMAT_TOKEN_INVALID;
                 }
                 
-                printf("%d \n", tokenindex[ontoken]);
                 if( tokenindex[ ontoken ] >= 0 ){
                     size += bits[ tokenindex[ ontoken ] ]->length - tokenlength[ ontoken ]; ontoken++;
                 }else if( tokenindex[ ontoken ] == FORMAT_TOKEN_ESCAPE ){
@@ -77,7 +70,6 @@ BBString *machStringFormat( BBString *str, BBArray *bitsarray, BBChar tokenchar 
                 l = tokenposition[k] - j; // length of section from str
                 memcpy( result->buf + i, str->buf + j, l*sizeof(BBChar) );
                 i += l; j += l + tokenlength[k];
-                printf("%d \n", tokenindex[k]);
                 if( tokenindex[k] >= 0 ){
                     bit = bits[ tokenindex[k] ];
                     memcpy( result->buf + i, bit->buf, bit->length*sizeof(BBChar) );
